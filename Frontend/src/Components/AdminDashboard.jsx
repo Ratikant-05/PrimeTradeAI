@@ -11,10 +11,13 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const res = await axios.get("http://localhost:4444/post/getAllPosts");
+        const res = await axios.get("https://primetradeai-20gz.onrender.com/post/getAllPosts", {
+          withCredentials: true
+        });
         setPosts(res.data);
       } catch (err) {
         console.error("Error fetching posts:", err);
+        toast.error("Failed to fetch posts");
       }
     };
     fetchPosts();
@@ -23,7 +26,9 @@ const AdminDashboard = () => {
   // Handle delete post
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:4444/post/delete/${id}`);
+      await axios.delete(`https://primetradeai-20gz.onrender.com/post/delete/${id}`, {
+        withCredentials: true
+      });
       setPosts(posts.filter((post) => post._id !== id));
       toast.success("Post deleted successfully!");
     } catch (err) {

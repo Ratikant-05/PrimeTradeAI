@@ -20,12 +20,17 @@ const AddPost = ({ existingPost }) => {
       if (existingPost) {
         // Update mode
         await axios.put(
-          `http://localhost:4444/post/update/${existingPost._id}`,
-          postData
+          `https://primetradeai-20gz.onrender.com/post/update/${existingPost._id}`,
+          postData,
+          { withCredentials: true }
         );
         toast.success("Post updated successfully!");
       } else {
-        await axios.post("http://localhost:4444/post/addPost", postData);
+        await axios.post(
+          "https://primetradeai-20gz.onrender.com/post/addPost", 
+          postData,
+          { withCredentials: true }
+        );
         toast.success("Post created successfully!");
       }
 

@@ -39,8 +39,9 @@ const Login = () => {
         navigate("/dashboard");
       }
     } catch (error) {
-      console.error(error.response);
-      toast.error("Internal Server Error");
+      console.error("Login error:", error.response);
+      setError(error.message);
+      toast.error(error.message);
     } finally {
       setLoading(false); // stop loading
     }
@@ -67,10 +68,24 @@ const Login = () => {
   };
 
   const goToAdminPanel = async () => {
-    if (isAdmin == true) {
-      navigate("/adminDashboard");
-    } else {
-      setError("You are not an Admin");
+    try {
+      setError("");
+      setLoading(true);
+      
+      const res = await axios.post(`https://primetradeai-20gz.onrender.com/auth/login`, { email, password }, { withCredentials: true });
+      
+      const user = res.data.existingUser.isAdmin;
+
+      if (user === true) {
+        navigate("/adminDashboard");
+      } else {
+        toast.error("You are not an Admin");
+      }
+    } catch (error) {
+      console.error("Admin verification error:", error.response);
+      toast.error("Failed to verify admin status. Please try again");
+    } finally {
+      setLoading(false);
     }
   };
 

@@ -1,17 +1,26 @@
 import User from "../Models/userModel.js"
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 
 const generateUserTokens = async (user_id)=>{
+    try {
+        const user = await User.findById(user_id)
+        
+        if (!user) {
+            throw new Error("User not found");
+        }
+        
+        const refreshToken = user.generateRefreshToken();
+        const accessToken = user.generateAccessToken();
+        user.refreshToken = refreshToken
 
-    const user = await User.findById(user_id)
-    const refreshToken = await user.generateRefreshToken();
-    const accessToken = await user.generateAccessToken();
-    user.refreshToken = refreshToken
+        await user.save()
 
-    await user.save()
-
-    return {refreshToken,accessToken};
-
+        return {refreshToken,accessToken};
+    } catch (error) {
+        console.error("Token generation error:", error);
+        throw error;
+    }
 }
 
 export const signupController = async (req, res) => {
@@ -99,6 +108,42 @@ export const loginController = async (req, res) => {
     res.status(500).json({
       msg: "Internal Server Error",
     });
+  }
+};
+
+export const getCurrentUser = async (req, res) => {
+  try {
+    // Get token from cookies
+    const token = req.cookies?.accessToken || req.headers?.authorization?.replace("Bearer ", "");
+
+    if (!token) {
+      return res.status(401).json({ error: "Unauthorized - No token provided" });
+    }
+
+    // Verify the token
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_KEY);
+
+    // Get user from database to ensure it's current
+    const user = await User.findById(decoded.userId).select("-password -refreshToken");
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    return res.status(200).json({
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin
+      }
+    });
+  } catch (error) {
+    if (error.name === "JsonWebTokenError" || error.name === "TokenExpiredError") {
+      return res.status(401).json({ error: "Unauthorized - Invalid or expired token" });
+    }
+    console.error("Get current user error:", error);
+    return res.status(500).json({ msg: "Internal Server Error" });
   }
 };
 

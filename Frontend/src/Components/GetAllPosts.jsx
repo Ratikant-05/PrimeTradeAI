@@ -8,7 +8,9 @@ const GetAllPosts = () => {
   // Fetch all posts from backend
   const fetchPosts = async () => {
     try {
-      const res = await axios.get("http://localhost:4444/post/getAllPosts");
+      const res = await axios.get("https://primetradeai-20gz.onrender.com/post/getAllPosts", {
+        withCredentials: true
+      });
       setPosts(res.data);
     } catch (error) {
       console.error("Error fetching posts:", error);
