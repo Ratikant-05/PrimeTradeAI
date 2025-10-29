@@ -109,35 +109,34 @@ export const loginController = async (req, res) => {
 
 export const logoutController = async (req, res) => {
   try {
-      const { refreshToken } = req.cookies;
-  
-      const cookieOptions = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', 
-        sameSite: 'strict', 
-      };
-  
-      if (!refreshToken) {
-        res.clearCookie('refreshToken', cookieOptions);
-        return res.status(400).json({ error: "No refresh token found" });
-      }
-  
-      const user = await User.findOne({ refreshToken });
-  
-      if (!user) {
-        res.clearCookie('refreshToken', cookieOptions);
-        return res.status(400).json({ error: "Invalid token" }); 
-      }
-      
-      user.refreshToken = null;
-      await user.save();
-      res.clearCookie('refreshToken', cookieOptions);
-      res.status(200).json({ message: "User logged out successfully" });
-      
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({
-        msg: "Internal Server Error",
-      });
+    // Get token from cookies or request body
+    const token = req.cookies?.refreshToken || req.body?.token;
+
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    };
+
+    if (!token) {
+      res.clearCookie("refreshToken", cookieOptions);
+      return res.status(200).json({ message: "User logged out successfully" });
     }
+    const user = await User.findOne({ refreshToken: token });
+
+    if (!user) {
+      res.clearCookie("refreshToken", cookieOptions);
+      return res.status(200).json({ message: "User logged out successfully" });
+    }
+
+    user.refreshToken = null;
+    await user.save();
+
+    res.clearCookie("refreshToken", cookieOptions);
+
+    return res.status(200).json({ message: "User logged out successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal Server Error" });
+  }
 };
