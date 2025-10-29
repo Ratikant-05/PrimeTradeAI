@@ -23,7 +23,6 @@ const AdminDashboard = () => {
     fetchPosts();
   }, []);
 
-  // Handle delete post
   const handleDelete = async (id) => {
     try {
       await axios.delete(`https://primetradeai-20gz.onrender.com/post/delete/${id}`, {
@@ -37,17 +36,10 @@ const AdminDashboard = () => {
     }
   };
 
-  // Handle edit post
-  const handleEdit = (post) => {
-    navigate("/update", { state: { existingPost: post } });
-  };
-
-  // Handle add post
   const handleAddPost = () => {
     navigate("/addPost");
   };
 
-  // Handle logout
   const handleLogout = () => {
     navigate("/");
     toast.success("Logout Successful")
@@ -74,7 +66,6 @@ const AdminDashboard = () => {
         </div>
       </header>
 
-      {/* Posts Section */}
       <main className="p-6">
         <h2 className="text-lg font-semibold mb-4 text-gray-700">All Posts</h2>
 
@@ -98,12 +89,6 @@ const AdminDashboard = () => {
                 </div>
 
                 <div className="flex justify-end gap-2 mt-4">
-                  <button
-                    onClick={() => handleEdit(post)}
-                    className="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600 transition"
-                  >
-                    Edit
-                  </button>
                   <button
                     onClick={() => handleDelete(post._id)}
                     className="bg-red-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-600 transition"

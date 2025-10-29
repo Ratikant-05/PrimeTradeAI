@@ -43,7 +43,7 @@ const Login = () => {
       setError(error.message);
       toast.error(error.message);
     } finally {
-      setLoading(false); // stop loading
+      setLoading(false);
     }
   };
 
@@ -132,7 +132,6 @@ const Login = () => {
             />
           </div>
 
-          {/* Admin Checkbox */}
           <div className="flex items-center gap-2">
             <input
               id="isAdmin"
