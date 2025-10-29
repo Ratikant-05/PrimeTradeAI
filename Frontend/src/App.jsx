@@ -2,8 +2,8 @@ import {Routes, Route } from "react-router-dom";
 import Login from "./Components/Login";
 import Signup from "./Components/Signup";
 import Dashboard from "./Components/Dashboard";
-import AdminDashboard from "./Components/adminDashboard";
-import AddPost from "./Components/addPost";
+import AdminDashboard from "./Components/AdminDashboard";
+import AddPost from "./Components/AddPost";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
