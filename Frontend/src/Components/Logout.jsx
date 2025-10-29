@@ -1,11 +1,33 @@
-import React from 'react'
+import React, { useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Logout = () => {
-  return (
-    <div>
-      
-    </div>
-  )
-}
+  const navigate = useNavigate();
 
-export default Logout
+  useEffect(() => {
+    const logoutUser = async () => {
+      try {
+        const response = await axios.post(
+          "https://primetradeai-20gz.onrender.com/auth/logout",
+          {},
+          { withCredentials: true } 
+        );
+
+        console.log(response.data);
+
+        localStorage.removeItem("token");
+
+        navigate("/login");
+      } catch (error) {
+        console.error("Logout failed:", error.response?.data || error.message);
+      }
+    };
+
+    logoutUser();
+  }, [navigate]);
+
+  return <div>Logging out...</div>;
+};
+
+export default Logout;
