@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -34,8 +35,8 @@ const Signup = () => {
         { withCredentials: true }
       );
 
-      setSuccess(res.data.msg || "Signup successful!");
-      setTimeout(() => navigate("/login"), 1000);
+      toast.success(res.data.msg || "Signup successful!");
+      setTimeout(() => navigate("/"), 1000);
     } catch (err) {
       setError(err.response?.data?.msg || "Signup failed. Try again.");
     }
@@ -105,7 +106,7 @@ const Signup = () => {
 
         <p className="text-sm text-center mt-4">
           Already have an account?{" "}
-          <a href="/login" className="text-blue-600 hover:underline">
+          <a href="/" className="text-blue-600 hover:underline">
             Log in
           </a>
         </p>

@@ -49,8 +49,8 @@ export const loginController = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    if (!((name || email) && password)) {
-      res.status(400).json({
+    if (!(email || password)) {
+      return res.status(400).json({
         msg: "User details missing",
       });
     }

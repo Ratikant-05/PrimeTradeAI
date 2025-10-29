@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -10,38 +11,38 @@ const Login = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleEmailChange = (event) => {
-    setEmail(event.target.value);
-  };
-
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  };
+  const handleEmailChange = (e) => setEmail(e.target.value);
+  const handlePasswordChange = (e) => setPassword(e.target.value);
+  const handleAdminChange = (e) => setIsAdmin(e.target.checked);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true);
+    setError("");
+    setMessage("");
 
     try {
       const response = await axios.post(
         "https://primetradeai-20gz.onrender.com/auth/login",
-        { email, password },
+        { email, password, isAdmin },
         { withCredentials: true }
       );
 
       const user = response.data.existingUser;
-
-      console.log(response.data.message + " as " + user.name);
-
       setMessage(response.data.message);
-      setError("");
-      setIsAdmin(user.isAdmin);
-
-      navigate("/dashboard"); // redirect to dashboard
+      toast.success("Login Successful")
+      if (user.isAdmin) {
+        navigate("/adminDashboard");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error) {
-      console.log(error.response);
-      setError("email or password incorrect");
-      setMessage("");
+      console.error(error.response);
+      toast.error("Email or password incorrect");
+    } finally {
+      setLoading(false); // stop loading
     }
   };
 
@@ -53,8 +54,10 @@ const Login = () => {
         {},
         { withCredentials: true }
       );
+      toast.success("Logout Successfully");
       setMessage(response.data.message);
       setIsAdmin(false);
+      
     } catch (error) {
       const errorMessage =
         error.response?.data?.error || "Failed to logout. Please try again.";
@@ -63,8 +66,12 @@ const Login = () => {
     }
   };
 
-  const goToAdminPanel = () => {
-    navigate("/admin"); // redirect to admin panel route
+  const goToAdminPanel = async () => {
+    if (isAdmin == true) {
+      navigate("/adminDashboard");
+    } else {
+      setError("You are not an Admin");
+    }
   };
 
   return (
@@ -84,6 +91,7 @@ const Login = () => {
               type="email"
               value={email}
               onChange={handleEmailChange}
+              disabled={loading}
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="Enter your email"
@@ -102,24 +110,39 @@ const Login = () => {
               type="password"
               value={password}
               onChange={handlePasswordChange}
+              disabled={loading}
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="Enter your password"
             />
           </div>
 
-          {error && (
-            <p className="text-red-500 text-sm text-center">{error}</p>
-          )}
-          {message && (
-            <p className="text-green-600 text-sm text-center">{message}</p>
-          )}
+          {/* Admin Checkbox */}
+          <div className="flex items-center gap-2">
+            <input
+              id="isAdmin"
+              type="checkbox"
+              checked={isAdmin}
+              onChange={handleAdminChange}
+              disabled={loading}
+              className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+            />
+            <label className="text-sm text-gray-700">I am an Admin</label>
+          </div>
+
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+          {message && <p className="text-green-600 text-sm text-center">{message}</p>}
 
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition"
+            disabled={loading}
+            className={`w-full py-2 rounded-lg font-medium transition text-white ${
+              loading
+                ? "bg-indigo-300 cursor-not-allowed"
+                : "bg-indigo-600 hover:bg-indigo-700"
+            }`}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
@@ -127,27 +150,23 @@ const Login = () => {
           Don’t have an account?{" "}
           <button
             onClick={() => navigate("/signup")}
+            disabled={loading}
             className="text-indigo-600 hover:underline"
           >
             Sign up
           </button>
         </p>
 
-        {isAdmin && (
-          <>
-            <p className="mt-4 text-center text-sm text-red-600 font-semibold">
-              Admin user logged in
-            </p>
-            <button
-              onClick={goToAdminPanel}
-              className="mt-2 w-full bg-yellow-600 text-white py-2 rounded-lg hover:bg-yellow-700 transition"
-            >
-              Go to Admin Panel
-            </button>
-          </>
+        {isAdmin && !loading && (
+          <button
+            onClick={goToAdminPanel}
+            className="mt-4 w-full bg-yellow-600 text-white py-2 rounded-lg hover:bg-yellow-700 transition"
+          >
+            Go to Admin Panel
+          </button>
         )}
 
-        {message && (
+        {message && !loading && (
           <button
             onClick={handleLogout}
             className="mt-4 w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition"
