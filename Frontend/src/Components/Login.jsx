@@ -40,7 +40,7 @@ const Login = () => {
       }
     } catch (error) {
       console.error(error.response);
-      toast.error("Email or password incorrect");
+      toast.error("Internal Server Error");
     } finally {
       setLoading(false); // stop loading
     }

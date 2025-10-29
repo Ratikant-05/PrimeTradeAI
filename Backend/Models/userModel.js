@@ -50,7 +50,7 @@ userSchema.methods.generateAccessToken = function () {
     {
       userId: this._id,
       email: this.email,
-      username: this.username,
+      username: this.name,
       isAdmin:this.isAdmin
     },
     process.env.ACCESS_TOKEN_KEY,

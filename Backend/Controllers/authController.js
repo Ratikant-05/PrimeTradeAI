@@ -47,20 +47,15 @@ export const signupController = async (req, res) => {
 
 export const loginController = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { email, password } = req.body;
 
-    if (!(email || password)) {
+    if (!email || !password) {
       return res.status(400).json({
         msg: "User details missing",
       });
     }
 
-    const existingUser = await User.findOne({
-      $or: [
-        { name }, 
-        { email }
-      ],
-    });
+    const existingUser = await User.findOne({ email });
 
     if (!existingUser) {
       return res
@@ -72,7 +67,7 @@ export const loginController = async (req, res) => {
     const isMatch = await bcrypt.compare(password, existingUser.password);
 
     if (!isMatch) {
-      res.status(400).json({
+      return res.status(400).json({
         msg: "Either Username or password not correct",
       });
     }
