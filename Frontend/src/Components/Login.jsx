@@ -24,7 +24,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:4444/auth/login",
+        "https://primetradeai-20gz.onrender.com/auth/login",
         { email, password },
         { withCredentials: true }
       );
@@ -49,7 +49,7 @@ const Login = () => {
     try {
       setError("");
       const response = await axios.post(
-        "http://localhost:4444/auth/logout",
+        "https://primetradeai-20gz.onrender.com/auth/logout",
         {},
         { withCredentials: true }
       );

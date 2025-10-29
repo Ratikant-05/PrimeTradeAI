@@ -6,7 +6,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const handleLogout = async() => {
-    const response = await axios.post('http://localhost:4444/auth/logout',{}, {withCredentials:true})
+    const response = await axios.post('https://primetradeai-20gz.onrender.com/auth/logout',{}, {withCredentials:true})
     console.log(response.data)
     console.log("Logging out...");
     navigate("/login");

@@ -11,7 +11,7 @@ const app = express()
 const port = process.env.PORT
 
 app.use(cors({
-  origin:["http://localhost:5173"],
+  origin:["http://localhost:5173", "https://primetradeai-20gz.onrender.com"],
   credentials:true
 }))
 app.use(cookieParser())

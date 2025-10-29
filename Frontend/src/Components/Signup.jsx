@@ -29,7 +29,7 @@ const Signup = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:4444/auth/signup",
+        "https://primetradeai-20gz.onrender.com/auth/signup",
         formData,
         { withCredentials: true }
       );
